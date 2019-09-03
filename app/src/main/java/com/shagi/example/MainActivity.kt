@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         button.setOnClickListener {
-            val dialog = DatePickerFragmentDialog.newInstance({ view, year, monthOfYear, dayOfMonth ->
+            val dialog = DatePickerFragmentDialog.newInstance({ _, year, monthOfYear, dayOfMonth ->
                 val calendar = Calendar.getInstance()
                 calendar.set(year, monthOfYear, dayOfMonth)
 
@@ -23,6 +23,13 @@ class MainActivity : AppCompatActivity() {
 
                 Toast.makeText(applicationContext, simpleDateFormat.format(calendar.time), Toast.LENGTH_SHORT).show()
             }, 2017, 11, 4)
+                .apply {
+                    maxDate = Calendar.getInstance().apply {
+                        set(Calendar.YEAR, 2019)
+                        set(Calendar.MONTH, Calendar.SEPTEMBER)
+                        set(Calendar.DAY_OF_MONTH, 1)
+                    }
+                }
             dialog.show(supportFragmentManager, "tag")
         }
     }
