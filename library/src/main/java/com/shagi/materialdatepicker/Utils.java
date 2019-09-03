@@ -20,14 +20,18 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 
 import java.util.Calendar;
@@ -46,6 +50,7 @@ public class Utils {
     public static final int SELECTED_ALPHA_THEME_DARK = 255;
     // Alpha level for fully opaque.
     public static final int FULL_ALPHA = 255;
+    public static final int POPUP_HEIGHT_BUFFER = 150;
 
     /**
      * Try to speak the specified text, for accessibility. Only available on JB or later.
@@ -160,5 +165,17 @@ public class Utils {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    public static int getPopupMenuHeight(Activity activity) {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            display.getRealSize(size);
+        } else {
+            display.getSize(size);
+        }
+        int height = size.y;
+        return height / 2 - POPUP_HEIGHT_BUFFER;
     }
 }

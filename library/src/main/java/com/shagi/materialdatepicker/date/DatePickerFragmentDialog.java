@@ -33,8 +33,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,10 +40,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.shagi.materialdatepicker.HapticFeedbackController;
@@ -54,9 +53,11 @@ import com.shagi.materialdatepicker.TypefaceHelper;
 import com.shagi.materialdatepicker.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -140,6 +141,7 @@ public class DatePickerFragmentDialog extends DialogFragment implements
     private TimeZone mTimezone;
     private DefaultDateRangeLimiter mDefaultLimiter = new DefaultDateRangeLimiter();
     private DateRangeLimiter mDateRangeLimiter = mDefaultLimiter;
+    private int popupMenuHeight = 0;
 
     private HapticFeedbackController mHapticFeedbackController;
 
@@ -207,6 +209,7 @@ public class DatePickerFragmentDialog extends DialogFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Activity activity = getActivity();
+        popupMenuHeight = Utils.getPopupMenuHeight(activity);
         activity.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         mCurrentView = UNINITIALIZED;
@@ -324,6 +327,7 @@ public class DatePickerFragmentDialog extends DialogFragment implements
         }
 
         mYearPickerPopup.setAdapter(yearPickerView.getAdapter());
+        mYearPickerPopup.setHeight(popupMenuHeight);
 
         // if theme mode has not been set by java code, check if it is specified in Style.xml
         if (!mThemeDarkChanged) {
@@ -899,19 +903,22 @@ public class DatePickerFragmentDialog extends DialogFragment implements
         } else if (v.getId() == R.id.amdp_date_picker_month_and_day) {
             setCurrentView(MONTH_AND_DAY_VIEW);
         } else if (v.getId() == R.id.amdp_month_picker) {
-            PopupMenu popupMenu = new PopupMenu(mMonthPickerView.getContext(), mMonthPickerView);
+            ListPopupWindow popupMenu = new ListPopupWindow(mMonthPickerView.getContext());
+            popupMenu.setAnchorView(mMonthPickerView);
+            final List<String> items = new ArrayList<>();
+            popupMenu.setHeight(popupMenuHeight);
 
             Calendar calendar = Calendar.getInstance();
             for (int i = 0; i < 12; i++) {
                 calendar.set(0, i + 1, 0);
-                popupMenu.getMenu().add(Menu.NONE, i, 1, MONTH_FORMAT_STAND_ALONE.format(calendar.getTime()));
+                items.add(MONTH_FORMAT_STAND_ALONE.format(calendar.getTime()));
             }
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            popupMenu.setAdapter(new ArrayAdapter(mMonthPickerView.getContext(), android.R.layout.simple_spinner_dropdown_item, items));
+            popupMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mDayPickerView.scrollToMonth(item.getItemId());
-                    mMonthPickerView.setText(item.getTitle());
-                    return false;
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    mDayPickerView.scrollToMonth(i);
+                    mMonthPickerView.setText(items.get(i));
                 }
             });
             popupMenu.show();
