@@ -903,7 +903,7 @@ public class DatePickerFragmentDialog extends DialogFragment implements
         } else if (v.getId() == R.id.amdp_date_picker_month_and_day) {
             setCurrentView(MONTH_AND_DAY_VIEW);
         } else if (v.getId() == R.id.amdp_month_picker) {
-            ListPopupWindow popupMenu = new ListPopupWindow(mMonthPickerView.getContext());
+            final ListPopupWindow popupMenu = new ListPopupWindow(mMonthPickerView.getContext());
             popupMenu.setAnchorView(mMonthPickerView);
             final List<String> items = new ArrayList<>();
             popupMenu.setHeight(popupMenuHeight);
@@ -919,6 +919,7 @@ public class DatePickerFragmentDialog extends DialogFragment implements
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     mDayPickerView.scrollToMonth(i);
                     mMonthPickerView.setText(items.get(i));
+                    popupMenu.dismiss();
                 }
             });
             popupMenu.show();
