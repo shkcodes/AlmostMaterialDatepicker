@@ -908,8 +908,19 @@ public class DatePickerFragmentDialog extends DialogFragment implements
             final List<String> items = new ArrayList<>();
             popupMenu.setHeight(popupMenuHeight);
 
+            int minMonth = 0;
+            int maxMonth = 11;
+
+            if (mDateRangeLimiter.getMinYear() == mCalendar.get(Calendar.YEAR)) {
+                minMonth = mDateRangeLimiter.getStartDate().get(Calendar.MONTH);
+            }
+
+            if (mDateRangeLimiter.getMaxYear() == mCalendar.get(Calendar.YEAR)) {
+                maxMonth = mDateRangeLimiter.getEndDate().get(Calendar.MONTH);
+            }
+
             Calendar calendar = Calendar.getInstance();
-            for (int i = 0; i < 12; i++) {
+            for (int i = minMonth; i <= maxMonth; i++) {
                 calendar.set(0, i + 1, 0);
                 items.add(MONTH_FORMAT_STAND_ALONE.format(calendar.getTime()));
             }
