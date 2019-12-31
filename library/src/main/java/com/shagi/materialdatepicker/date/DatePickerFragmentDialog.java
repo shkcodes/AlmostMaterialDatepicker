@@ -323,10 +323,10 @@ public class DatePickerFragmentDialog extends DialogFragment implements
         if (Build.VERSION.SDK_INT >= 19) {
             mYearPickerPopup.setPromptView(yearPickerView);
         } else {
+            mYearPickerPopup.setAdapter(yearPickerView.getAdapter());
             mYearPickerPopup.setOnItemClickListener(yearPickerView.getOnItemClickListener());
         }
 
-        mYearPickerPopup.setAdapter(yearPickerView.getAdapter());
         mYearPickerPopup.setHeight(popupMenuHeight);
 
         // if theme mode has not been set by java code, check if it is specified in Style.xml
